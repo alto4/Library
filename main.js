@@ -1,5 +1,32 @@
 // Variable Declarations
 let libraryBooks = [];
+const newButton = document.querySelector('.btn-new');
+const submitButton = document.querySelector('.btn-submit');
+const bookForm = document.querySelector('.book-form');
+
+// Process New Book form Entry
+const titleInput = document.querySelector('#title');
+const authorInput = document.querySelector('#author');
+const pagesInput = document.querySelector('#pages');
+
+
+// Event Listeners
+// Show New Book Form
+newButton.addEventListener('click', function () {
+    bookForm.classList.toggle('open');
+})
+
+submitButton.addEventListener('click', function (e) {
+    e.preventDefault();
+    let title = titleInput.value;
+    let author = authorInput.value;
+    let pages = pagesInput.value;
+    let read = false;
+
+    addBookToLibrary(title, author, pages, read);
+    render();
+
+});
 
 // Constructor Function for Book objects
 function Book(title, author, pages, read) {
@@ -29,10 +56,10 @@ function addBookToLibrary(title, author, pages, read) {
 }
 
 // Add permanent sample entries to libraryBooks for degugging render()
-addBookToLibrary('1984', 'George Orwell', 307, true);
-addBookToLibrary('Odd Thomas', 'Dean Koontz', 412, true);
-addBookToLibrary('Dreams of Spring', 'George R. Martin', 951, false);
-addBookToLibrary('The Brothers Karamazov', 'Fyodor Dostoyevsky', 1851, true);
+// addBookToLibrary('1984', 'George Orwell', 307, true);
+// addBookToLibrary('Odd Thomas', 'Dean Koontz', 412, true);
+// addBookToLibrary('Dreams of Spring', 'George R. Martin', 951, false);
+// addBookToLibrary('The Brothers Karamazov', 'Fyodor Dostoyevsky', 1851, true);
 
 // render Function - show libraryBooks objects in the browser
 function render(books) {
@@ -43,8 +70,6 @@ function render(books) {
     bookList.style.display = 'grid';
     bookList.style.gridTemplateColumns = 'repeat(3, 1fr)';
     bookList.style.gridGap = '1rem';
-
-
 
     libraryBooks.forEach(book => {
         const bookListItem = document.createElement('div');
@@ -69,19 +94,13 @@ function render(books) {
         bookListItem.appendChild(bookAuthor);
         bookListItem.appendChild(bookPages);
         bookListItem.appendChild(bookRead);
-        bookListItem.style.border = '1px solid black';
-        bookListItem.style.width = '200px';
+        bookListItem.style.width = '240px';
         bookListItem.style.padding = '2rem';
         bookListItem.style.textAlign = 'center';
-
 
         bookList.appendChild(bookListItem);
     });
 
-
     body.append(bookList);
 
-
 }
-
-render('book');
