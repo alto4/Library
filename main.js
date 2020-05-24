@@ -35,6 +35,7 @@ submitButton.addEventListener("click", function (e) {
 
   addBookToLibrary(title, author, pages, read);
   renderBook(libraryBooks[libraryBooks.length - 1]);
+  addDataAttr(bookList);
 });
 
 // Constructor Function for Book objects
@@ -55,12 +56,16 @@ function Book(title, author, pages, read) {
     }
     return `${title} by ${author}, ${pages} pages, ${readString}`;
   };
+
+  // toggleRead
+  function toggleRead() {
+    this.read.toggle();
+  }
 }
 
 // addBookToLibrary Function - adds a new book to the myLibrary array
 function addBookToLibrary(title, author, pages, read) {
   let newBook = new Book(title, author, pages, read);
-
   libraryBooks.push(newBook);
 }
 
@@ -72,11 +77,11 @@ addBookToLibrary("The Brothers Karamazov", "Fyodor Dostoyevsky", 1851, true);
 
 // render Function - show libraryBooks objects in the browser
 function render(books) {
-  let index = 0;
   libraryBooks.forEach((book) => {
-    renderBook(book, index);
-    index++;
+    renderBook(book);
   });
+
+  addDataAttr(bookList);
 
   body.append(bookList);
 }
@@ -107,12 +112,13 @@ function renderBook(book) {
   deleteButton.classList.add("btn-delete");
 
   if (book.read) {
-    readButton.innerText = "Mark as Read"
+    readButton.innerText = "Mark Unread";
   } else {
-    readButton.innerText = "Read";
+    readButton.innerText = "Mark Read";
   }
-  readButton.classList.add('btn');
-  readButton.classList.add('btn-read');
+
+  readButton.classList.add("btn");
+  readButton.classList.add("btn-read");
 
   bookListItem.appendChild(bookTitle);
   bookListItem.appendChild(bookAuthor);
@@ -131,11 +137,11 @@ function renderBook(book) {
 render();
 insertDeleteButtons();
 
-
 // deleteBook Function
 function deleteBook(e) {
   e.target.parentElement.remove();
   libraryBooks.splice(e.target.parentElement.getAttribute("data-num"), 1);
+  addDataAttr(bookList);
 }
 
 // deleteAllBooks Function
@@ -153,7 +159,6 @@ function insertDeleteButtons() {
   let deleteButtons = document.querySelectorAll(".btn-delete");
   let index = 0;
 
-
   deleteButtons.forEach((btn) => {
     btn.addEventListener("click", deleteBook);
     btn.setAttribute("data-num", index);
@@ -162,15 +167,41 @@ function insertDeleteButtons() {
 }
 
 // Event Listener for Delete All Books button
-deleteAllButton.addEventListener('click', deleteAllBooks)
+deleteAllButton.addEventListener("click", deleteAllBooks);
 
-let readButtons = document.querySelectorAll('.btn-read');
+let readButtons = document.querySelectorAll(".btn-read");
 
-readButtons.forEach(readButton => {
-  readButton.addEventListener('click', toggleRead);
-})
-
-function toggleRead(e) {
-  console.log(e.target.parentElement.getAttribute("data-num"))
-  e.target.index
+function addDataAttr(items) {
+  let index = 0;
+  items = Array.from(items.children);
+  items.forEach((item) => {
+    item.setAttribute("data-num", index);
+    console.log(item);
+    index++;
+  });
 }
+// toggleRead Function - changes the status from read to unread and vice-versa
+function toggleRead(e) {
+  let targettedBook = e.target.parentElement;
+  let targettedBookData = targettedBook.getAttribute("data-num");
+  console.log(targettedBookData);
+  libraryBooks[targettedBookData].read = !libraryBooks[targettedBookData].read;
+  console.log(libraryBooks[targettedBookData].read);
+  if (libraryBooks[targettedBookData].read) {
+    e.target.innerText = "Mark Unread";
+  } else {
+    e.target.innerText = "Mark Read";
+  }
+
+  let readPara = targettedBook.querySelector("p");
+  console.log(readPara);
+  if (libraryBooks[targettedBookData].read) {
+    readPara.innerText = "Status: Read";
+  } else {
+    readPara.innerText = "Status: Unread";
+  }
+}
+
+readButtons.forEach((readButton) => {
+  readButton.addEventListener("click", toggleRead);
+});
