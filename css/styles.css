@@ -115,7 +115,6 @@ h1 {
 
 @media(max-width: 800px) {
 
-
     .button-menu {
         max-width: 70% !important;
     }
@@ -133,7 +132,6 @@ h1 {
 }
 
 @media(max-width: 500px) {
-
 
     .button-menu {
         max-width: 70% !important;
