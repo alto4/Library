@@ -34,7 +34,7 @@ h1 {
 }
 
 .book-form {
-    width: 30%;
+    max-width: 320px;
     display: none;
     grid-template-columns: 1fr;
     text-align: left;
@@ -111,4 +111,47 @@ h1 {
 .btn-read {
     background: orangered;
 
+}
+
+@media(max-width: 800px) {
+
+
+    .button-menu {
+        max-width: 70% !important;
+    }
+
+    .book-list {
+        width: 80% !important;
+        grid-template-columns: repeat(2, 1fr) !important;
+        margin: 0 auto;
+        text-align: center;
+    }
+
+    .book-card {
+        margin: auto;
+    }
+}
+
+@media(max-width: 500px) {
+
+
+    .button-menu {
+        max-width: 70% !important;
+    }
+
+    .button-menu .btn {
+        margin: .3rem auto;
+        width: 100%;
+    }
+
+    .book-list {
+        width: 100% !important;
+        grid-template-columns: 1fr !important;
+        margin: 0 auto;
+        text-align: center;
+    }
+
+    .book-card {
+        margin: .5rem auto;
+    }
 }
