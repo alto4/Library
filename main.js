@@ -1,8 +1,9 @@
-// Variable Declarations
+// DOM Elements/Variable Declarations
 let libraryBooks = [];
+
+const bookForm = document.querySelector(".book-form");
 const newButton = document.querySelector(".btn-new");
 const submitButton = document.querySelector(".btn-submit");
-const bookForm = document.querySelector(".book-form");
 const deleteAllButton = document.querySelector(".btn-delete-all");
 
 // Create Booklist container
@@ -13,30 +14,6 @@ bookList.style.margin = "1rem auto";
 bookList.style.display = "grid";
 bookList.style.gridTemplateColumns = "repeat(3, 1fr)";
 bookList.style.gridGap = "1rem";
-
-// Process New Book form Entry
-const titleInput = document.querySelector("#title");
-const authorInput = document.querySelector("#author");
-const pagesInput = document.querySelector("#pages");
-
-// Event Listeners
-// Show New Book Form - when New Book button is clicked, show the book input form
-newButton.addEventListener("click", function () {
-  bookForm.classList.toggle("open");
-});
-
-// Event Listener for Submit Button - Add New Book with inputted data
-submitButton.addEventListener("click", function (e) {
-  e.preventDefault();
-  let title = titleInput.value;
-  let author = authorInput.value;
-  let pages = pagesInput.value;
-  let read = false;
-
-  addBookToLibrary(title, author, pages, read);
-  renderBook(libraryBooks[libraryBooks.length - 1]);
-  addDataAttr(bookList);
-});
 
 // Constructor Function for Book objects
 function Book(title, author, pages, read) {
@@ -63,6 +40,33 @@ function Book(title, author, pages, read) {
   }
 }
 
+// Event Listeners
+// Show New Book Form - when New Book button is clicked, show the book input form
+newButton.addEventListener("click", function () {
+  bookForm.classList.toggle("open");
+});
+
+// Event Listener for Submit Button - Add New Book with inputted form data
+submitButton.addEventListener("click", function (e) {
+  const titleInput = document.querySelector("#title");
+  const authorInput = document.querySelector("#author");
+  const pagesInput = document.querySelector("#pages");
+
+  e.preventDefault();
+  let title = titleInput.value;
+  let author = authorInput.value;
+  let pages = pagesInput.value;
+  let read = false;
+
+  // Create new book that is pushed to libraryBooks array, then rendered in DOM, and assigned a data-attribute corresponding with the arrray index
+  addBookToLibrary(title, author, pages, read);
+  renderBook(libraryBooks[libraryBooks.length - 1]);
+  addDataAttr(bookList);
+});
+
+// Event Listener for Delete All Books button
+deleteAllButton.addEventListener("click", deleteAllBooks);
+
 // addBookToLibrary Function - adds a new book to the myLibrary array
 function addBookToLibrary(title, author, pages, read) {
   let newBook = new Book(title, author, pages, read);
@@ -81,13 +85,12 @@ function render(books) {
     renderBook(book);
   });
 
-  addDataAttr(bookList);
-
   body.append(bookList);
 }
 
 // renderBook Function - renders a new book card in the DOM
 function renderBook(book) {
+  // Create book card and internal elements in the DOM
   const bookListItem = document.createElement("div");
   bookListItem.classList.add("book-card");
 
@@ -98,6 +101,7 @@ function renderBook(book) {
   const deleteButton = document.createElement("button");
   const readButton = document.createElement("button");
 
+  // Populate elements with the corresponding data for each book
   bookTitle.innerText = book.title;
   bookAuthor.innerText = `By: ${book.author}`;
   bookPages.innerText = `Pages: ${book.pages}`;
@@ -120,6 +124,7 @@ function renderBook(book) {
   readButton.classList.add("btn");
   readButton.classList.add("btn-read");
 
+  // Append the elements into the book card div
   bookListItem.appendChild(bookTitle);
   bookListItem.appendChild(bookAuthor);
   bookListItem.appendChild(bookPages);
@@ -130,30 +135,36 @@ function renderBook(book) {
   bookListItem.style.padding = "2rem";
   bookListItem.style.textAlign = "center";
 
+  // Appending book card into container, add data attribute, delete and read/unread buttons
   bookList.appendChild(bookListItem);
+  addDataAttr(bookList);
   insertDeleteButtons();
+  insertReadButtons();
 }
 
+// Populate booklist with sample books and assign them functionality
 render();
 insertDeleteButtons();
+insertReadButtons();
 
-// deleteBook Function
+// deleteBook Function - removes the book card div from DOM, the corresponding element from the libraryBooks array, then re-assigns data-attributes
 function deleteBook(e) {
   e.target.parentElement.remove();
   libraryBooks.splice(e.target.parentElement.getAttribute("data-num"), 1);
   addDataAttr(bookList);
 }
 
-// deleteAllBooks Function
+// deleteAllBooks Function - removes all book cards from the DOM and clears the libraryBooks array
 function deleteAllBooks() {
-  let deleteButtons = document.querySelectorAll(".btn-delete");
+  const bookCards = document.querySelectorAll(".book-card");
 
-  deleteButtons.forEach((button) => {
-    button.parentElement.remove();
+  bookCards.forEach((card) => {
+    card.remove();
     libraryBooks = [];
   });
 }
 
+// insertDeleteButtons Function - loops through all book cards and wires their delete buttons to the corresponding function
 function insertDeleteButtons() {
   // Event Listener for Delete Button
   let deleteButtons = document.querySelectorAll(".btn-delete");
@@ -166,33 +177,32 @@ function insertDeleteButtons() {
   });
 }
 
-// Event Listener for Delete All Books button
-deleteAllButton.addEventListener("click", deleteAllBooks);
-
-let readButtons = document.querySelectorAll(".btn-read");
-
-function addDataAttr(items) {
+// insertReadButtons Function - loops through all book cards and wires their read/unread buttons to the corresponding function
+function insertReadButtons() {
+  let readButtons = document.querySelectorAll(".btn-read");
   let index = 0;
-  items = Array.from(items.children);
-  items.forEach((item) => {
-    item.setAttribute("data-num", index);
-    console.log(item);
+
+  readButtons.forEach((readButton) => {
+    readButton.addEventListener("click", toggleRead);
+    readButton.setAttribute("data-num", index);
     index++;
   });
 }
+
 // toggleRead Function - changes the status from read to unread and vice-versa
 function toggleRead(e) {
   let targettedBook = e.target.parentElement;
   let targettedBookData = targettedBook.getAttribute("data-num");
-  console.log(targettedBookData);
   libraryBooks[targettedBookData].read = !libraryBooks[targettedBookData].read;
-  console.log(libraryBooks[targettedBookData].read);
+
+  // Update the read/unread button text
   if (libraryBooks[targettedBookData].read) {
     e.target.innerText = "Mark Unread";
   } else {
     e.target.innerText = "Mark Read";
   }
 
+  // Update the book card info to show new read/unread status
   let readPara = targettedBook.querySelector("p");
   console.log(readPara);
   if (libraryBooks[targettedBookData].read) {
@@ -202,6 +212,12 @@ function toggleRead(e) {
   }
 }
 
-readButtons.forEach((readButton) => {
-  readButton.addEventListener("click", toggleRead);
-});
+// addDataAttr Function - loop through each item from nodelist and assign an index number that aligns the book card index with its corresponding libraryBooks array index
+function addDataAttr(items) {
+  let index = 0;
+  items = Array.from(items.children);
+  items.forEach((item) => {
+    item.setAttribute("data-num", index);
+    index++;
+  });
+}
